@@ -54,7 +54,7 @@ public class JournalEntryController {
         JournalEntity old = journalEntryService.findJournalById(myId).orElse(null);
         if(old!=null){
             old.setTitle(newEntry.getTitle()!=null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle());
-            old.setContent(newEntry.getContent()!=null && !newEntry.equals("") ? newEntry.getContent() : old.getContent()) ;
+            old.setContent(newEntry.getContent()!=null && !newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent()) ;
         }else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
