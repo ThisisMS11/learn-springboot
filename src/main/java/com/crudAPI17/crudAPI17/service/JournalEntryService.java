@@ -1,11 +1,13 @@
 package com.crudAPI17.crudAPI17.service;
 
 import com.crudAPI17.crudAPI17.entity.JournalEntity;
+import com.crudAPI17.crudAPI17.entity.User;
 import com.crudAPI17.crudAPI17.repository.JournalEntryRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,9 +17,21 @@ public class JournalEntryService {
     @Autowired
     private JournalEntryRepository journalEntryRepository;
 
+    @Autowired
+    private UserService userService;
+
+    public void saveEntry(JournalEntity journalEntity, String userName){
+        User user = userService.findByUserName(userName);
+        journalEntity.setDate(LocalDateTime.now());
+        JournalEntity saved = journalEntryRepository.save(journalEntity);
+        user.getJournalEnteries().add(saved);
+        userService.saveUser(user);
+    }
+
     public void saveEntry(JournalEntity journalEntity){
         journalEntryRepository.save(journalEntity);
     }
+
 
     public List<JournalEntity> getAll(){
         return journalEntryRepository.findAll();
@@ -27,12 +41,10 @@ public class JournalEntryService {
         return journalEntryRepository.findById(String.valueOf(id));
     }
 
-    public void deleteById(ObjectId id){
+    public void deleteById(ObjectId id, String userName){
+        User user = userService.findByUserName(userName);
+        user.getJournalEnteries().removeIf(x -> x.getId().equals(id));
+        userService.saveUser(user);
         journalEntryRepository.deleteById(String.valueOf(id));
     }
-
-//    public boolean updateJournalById(ObjectId id , JournalEntity updated){
-//        journalEntryRepository.fi
-//    }
-
 }

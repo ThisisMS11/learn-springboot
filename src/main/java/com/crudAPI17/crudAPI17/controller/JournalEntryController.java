@@ -1,6 +1,8 @@
 package com.crudAPI17.crudAPI17.controller;
+import com.crudAPI17.crudAPI17.entity.User;
 import com.crudAPI17.crudAPI17.service.JournalEntryService;
 import com.crudAPI17.crudAPI17.entity.JournalEntity;
+import com.crudAPI17.crudAPI17.service.UserService;
 import org.apache.catalina.connector.Response;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +19,18 @@ public class JournalEntryController {
     @Autowired
     private JournalEntryService journalEntryService;
 
-    @PostMapping
-    public ResponseEntity<JournalEntity> createEntry(@RequestBody JournalEntity myEntry) {
+    @PostMapping("/{userName}")
+    public ResponseEntity<JournalEntity> createEntry(@RequestBody JournalEntity myEntry, @PathVariable String userName) {
         try{
-            myEntry.setDate(LocalDateTime.now());
-            journalEntryService.saveEntry(myEntry);
+            journalEntryService.saveEntry(myEntry, userName);
             return new ResponseEntity<JournalEntity>(myEntry, HttpStatus.CREATED);
         }catch(Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @GetMapping
-    public List<JournalEntity> getAll(){
+    @GetMapping("/{userName}")
+    public List<JournalEntity> getAllJournalEnteriesByUser(@PathVariable String userName){
         return journalEntryService.getAll();
     }
 
@@ -43,18 +44,18 @@ public class JournalEntryController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("id/{myId}")
-    public ResponseEntity<?> deleteJournalEntryById(@PathVariable ObjectId myId){
-        journalEntryService.deleteById(myId);
+    @DeleteMapping("id/{userName}/{myId}")
+    public ResponseEntity<?> deleteJournalEntryById(@PathVariable ObjectId myId, @PathVariable String userName){
+        journalEntryService.deleteById(myId, userName);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("id/{myId}")
-    public ResponseEntity<?> updateJournalById(@PathVariable ObjectId myId, @RequestBody JournalEntity newEntry){
+    @PutMapping("id/{userName}/{myId}")
+    public ResponseEntity<?> updateJournalById(@PathVariable ObjectId myId, @PathVariable String userName, @RequestBody JournalEntity newEntry){
         JournalEntity old = journalEntryService.findJournalById(myId).orElse(null);
         if(old!=null){
             old.setTitle(newEntry.getTitle()!=null && !newEntry.getTitle().equals("") ? newEntry.getTitle() : old.getTitle());
-            old.setContent(newEntry.getContent()!=null && !newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent()) ;
+            old.setContent(newEntry.getContent()!=null && !newEntry.getContent().equals("") ? newEntry.getContent() : old.getContent());
         }else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
