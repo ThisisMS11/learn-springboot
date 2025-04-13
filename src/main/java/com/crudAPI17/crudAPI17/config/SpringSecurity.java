@@ -1,9 +1,6 @@
 package com.crudAPI17.crudAPI17.config;
-
 import com.crudAPI17.crudAPI17.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -27,8 +24,6 @@ public class SpringSecurity {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-
         return http.authorizeHttpRequests(request -> request
                         .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/journal/**", "/user/**").authenticated()

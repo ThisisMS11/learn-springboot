@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.plaf.synth.SynthTextAreaUI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -47,10 +48,19 @@ public class JournalEntryService {
         return journalEntryRepository.findById(String.valueOf(id));
     }
 
-    public void deleteById(ObjectId id, String userName){
-        User user = userService.findByUserName(userName);
-        user.getJournalEnteries().removeIf(x -> x.getId().equals(id));
-        userService.saveUser(user);
-        journalEntryRepository.deleteById(String.valueOf(id));
+    public boolean deleteById(ObjectId id, String userName){
+        boolean removed = false;
+        try{
+            User user = userService.findByUserName(userName);
+            removed = user.getJournalEnteries().removeIf(x -> x.getId().equals(id));
+            if(removed){
+                userService.saveUser(user);
+                journalEntryRepository.deleteById(String.valueOf(id));
+            }
+        }catch (Exception e) {
+            System.out.println(e);
+            throw new RuntimeException("An error occured while saving the entry", e);
+        }
+        return removed;
     }
 }
