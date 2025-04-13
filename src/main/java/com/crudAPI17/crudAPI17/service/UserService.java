@@ -2,6 +2,7 @@ package com.crudAPI17.crudAPI17.service;
 
 import com.crudAPI17.crudAPI17.entity.User;
 import com.crudAPI17.crudAPI17.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @Component
 public class UserService {
 
@@ -36,6 +38,7 @@ public class UserService {
     }
 
     public List<User> getAll(){
+        log.info("Getting all user information");
         return userRepository.findAll();
     }
 
